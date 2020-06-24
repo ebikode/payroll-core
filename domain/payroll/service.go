@@ -8,10 +8,13 @@ import (
 
 // PayrollService provides payroll operations
 type PayrollService interface {
+	GetPayrollReports() []*md.PayrollReport
+	GetPayrollAllMonthAndYear() []*md.PayrollMonthYear
 	GetPayroll(string, string) *md.Payroll
 	GetLastPayroll() *md.Payroll
 	GetPayrolls(int, int) []*md.Payroll
 	GetPayrollsByMonthYear(uint, uint) []*md.Payroll
+	GetSinglePayrollByMonthYear(uint, uint) *md.Payroll
 	GetEmployeePayrolls(string, int, int) []*md.Payroll
 	CreatePayroll(md.Payroll) (*md.Payroll, tr.TParam, error)
 	UpdatePayroll(*md.Payroll) (*md.Payroll, tr.TParam, error)
@@ -57,6 +60,18 @@ func (s *service) GetPayrolls(page, limit int) []*md.Payroll {
 
 func (s *service) GetPayrollsByMonthYear(month, year uint) []*md.Payroll {
 	return s.pRepo.GetByMonthYear(month, year)
+}
+
+func (s *service) GetPayrollAllMonthAndYear() []*md.PayrollMonthYear {
+	return s.pRepo.GetAllMonthAndYear()
+}
+
+func (s *service) GetSinglePayrollByMonthYear(month, year uint) *md.Payroll {
+	return s.pRepo.GetSingleByMonthYear(month, year)
+}
+
+func (s *service) GetPayrollReports() []*md.PayrollReport {
+	return s.pRepo.GetReports()
 }
 
 /*

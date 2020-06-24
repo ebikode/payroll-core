@@ -37,6 +37,30 @@ func GetPayrollEndpoint(ps pyr.PayrollService, userType string) http.HandlerFunc
 	}
 }
 
+// GetPayrollReportsEndpoint ...
+func GetPayrollReportsEndpoint(ps pyr.PayrollService) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		reports := ps.GetPayrollReports()
+		resp := ut.Message(true, "")
+		resp["payroll_reports"] = reports
+		ut.Respond(w, r, resp)
+	}
+}
+
+// GetPayrollAllMonthAndYearEndpoint Get all Month Year Combo.
+func GetPayrollAllMonthAndYearEndpoint(ps pyr.PayrollService) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		filters := ps.GetPayrollAllMonthAndYear()
+		resp := ut.Message(true, "")
+		resp["payroll_filters"] = filters
+		ut.Respond(w, r, resp)
+	}
+}
+
 // GetPayrollsEndpoint Admin Enpoint for fetching all payrolls
 func GetPayrollsEndpoint(ps pyr.PayrollService, userType string) http.HandlerFunc {
 

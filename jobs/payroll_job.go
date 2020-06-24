@@ -15,6 +15,55 @@ import (
 
 var employees []*md.Employee
 
+// RunDefaultPayrollGenerationJob ...
+func RunDefaultPayrollGenerationJob(
+	pys pyr.PayrollService,
+	emps emp.EmployeeService, txs tx.TaxService,
+) {
+	count := 5
+
+	for i := 0; i < count; i++ {
+		month := uint(i) + 1
+		year := uint(2020)
+		payroll := pys.GetSinglePayrollByMonthYear(month, year)
+
+		if payroll == nil {
+			employees := emps.GetAllActivePubEmployee()
+
+			fmt.Println("Default Payroll Generation Started")
+
+			for _, v := range employees {
+
+				if v.Salary != nil {
+					netSalary, tax := generateNetSalaryAndTaxDeductions(v.Salary)
+
+					payroll := md.Payroll{
+						EmployeeID:    v.ID,
+						GrossSalary:   v.Salary.Salary,
+						NetSalary:     netSalary,
+						Month:         month,
+						Year:          year,
+						PaymentStatus: ut.Success,
+						Status:        ut.Approved,
+					}
+
+					newPayroll, _, err := pys.CreatePayroll(payroll)
+
+					if err == nil {
+						tax.PayrollID = newPayroll.ID
+						txs.CreateTax(tax)
+					}
+
+				}
+
+			}
+
+			fmt.Println("Default Payroll Generation Ended")
+		}
+	}
+
+}
+
 // RunPayrollGenerationJob - Automated Payroll Generation
 func RunPayrollGenerationJob(
 	pys pyr.PayrollService, aps apset.AppSettingService,
@@ -28,34 +77,38 @@ func RunPayrollGenerationJob(
 	now := time.Now()
 
 	todayDate := now.Day()
-	todayMonth := int(now.Month())
-	todayYear := now.Year()
+	todayMonth := uint(int(now.Month()))
+	todayYear := uint(now.Year())
 
-	if int(generationDate) >= todayDate {
-		lastPayroll := pys.GetLastPayroll()
+	if todayDate >= int(generationDate) {
+		checkPayroll := pys.GetSinglePayrollByMonthYear(todayMonth, todayYear)
 
-		if lastPayroll == nil || (int(lastPayroll.Month) != todayMonth && int(lastPayroll.Year) != todayYear) {
+		if checkPayroll == nil {
 			employees := emps.GetAllActivePubEmployee()
 
 			fmt.Println("Payroll Generation Automation Started")
 
 			for _, v := range employees {
 
-				netSalary, tax := generateNetSalaryAndTaxDeductions(v.Salary)
+				if v.Salary != nil {
 
-				payroll := md.Payroll{
-					EmployeeID:  v.ID,
-					GrossSalary: v.Salary.Salary,
-					NetSalary:   netSalary,
-					Month:       uint(todayMonth),
-					Year:        uint(todayYear),
-				}
+					netSalary, tax := generateNetSalaryAndTaxDeductions(v.Salary)
 
-				newPayroll, _, err := pys.CreatePayroll(payroll)
+					payroll := md.Payroll{
+						EmployeeID:  v.ID,
+						GrossSalary: v.Salary.Salary,
+						NetSalary:   netSalary,
+						Month:       todayMonth,
+						Year:        todayYear,
+					}
 
-				if err == nil {
-					tax.PayrollID = newPayroll.ID
-					txs.CreateTax(tax)
+					newPayroll, _, err := pys.CreatePayroll(payroll)
+
+					if err == nil {
+						tax.PayrollID = newPayroll.ID
+						txs.CreateTax(tax)
+					}
+
 				}
 
 			}

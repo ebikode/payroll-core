@@ -54,6 +54,9 @@ func InitJobs(mdb *storage.MDatabase) {
 		// Create default employees
 		jb.RunCreateDefaultEmployees(empService, salaryService)
 
+		// Create Payroll Demo Data
+		jb.RunDefaultPayrollGenerationJob(pyrService, empService, taxService)
+
 		var runGeneratePayrollJob = func() {
 			jb.RunPayrollGenerationJob(pyrService, astService, empService, taxService)
 		}

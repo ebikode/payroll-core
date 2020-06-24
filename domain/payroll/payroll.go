@@ -22,6 +22,9 @@ type ValidationFields struct {
 
 // PayrollRepository provides access to the Payroll storage.
 type PayrollRepository interface {
+	GetReports() []*md.PayrollReport
+	// Get all Month Year Combo.
+	GetAllMonthAndYear() []*md.PayrollMonthYear
 	// Get returns the payroll with given ID.
 	Get(string, string) *md.Payroll
 	GetLastPayroll() *md.Payroll
@@ -30,6 +33,7 @@ type PayrollRepository interface {
 	// returns the payrolls with given employeeID.
 	GetByEmployee(string, int, int) []*md.Payroll
 	GetByMonthYear(uint, uint) []*md.Payroll
+	GetSingleByMonthYear(uint, uint) *md.Payroll
 	// Store a given employee payroll to the repository.
 	Store(md.Payroll) (*md.Payroll, error)
 	// Update a given payroll in the repository.

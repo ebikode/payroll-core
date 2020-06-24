@@ -8,6 +8,6 @@ type Tax struct {
 	Paye      float64  `json:"paye" gorm:"type:float(10,2)"`
 	Nsitf     float64  `json:"nsitf" gorm:"type:float(10,2)"`
 	Nhf       float64  `json:"nhf" gorm:"type:float(10,2)"`
-	Itf       float64  `json:"Itf" gorm:"type:float(10,2)"`
+	Itf       float64  `json:"itf" gorm:"type:float(10,2)"`
 	Payroll   *Payroll `json:"payroll"`
 }

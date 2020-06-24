@@ -175,6 +175,8 @@ func InitRoutes(cfg config.Constants, mdb *storage.MDatabase) *chi.Mux {
 				// Payrolls Endpoints
 				r.Route("/payrolls", func(r chi.Router) {
 					r.Get("/", endP.GetPayrollsEndpoint(pyrService, "admin"))
+					r.Get("/reports", endP.GetPayrollReportsEndpoint(pyrService))
+					r.Get("/filters", endP.GetPayrollAllMonthAndYearEndpoint(pyrService))
 					r.Get("/by_month/{month}/{year}", endP.GetPayrollsByMonthYearEndpoint(pyrService, "admin"))
 					r.Get("/single/{employeeID}/{payrollID}", endP.GetPayrollEndpoint(pyrService, "admin"))
 					r.Get("/employee/{employeeID}", endP.GetEmployeePayrollsEndpoint(pyrService, "admin"))

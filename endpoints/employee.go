@@ -11,7 +11,6 @@ import (
 	tr "github.com/ebikode/payroll-core/translation"
 	ut "github.com/ebikode/payroll-core/utils"
 	"github.com/go-chi/chi"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 // GetEmployeeEndpoint fetch Authenticated employee account
@@ -97,6 +96,8 @@ func CreateEmployeeEndpoint(emps emp.EmployeeService, acs act.ActivityLogService
 
 		// REMOVE THIS AFTER DEMO
 		employee.Password = "EMPASSWORD2020"
+		employee.IsEmailVerified = true
+		employee.Status = ut.Active
 		// employee.Username = username
 
 		// Validate employee input
@@ -131,25 +132,25 @@ func CreateEmployeeEndpoint(emps emp.EmployeeService, acs act.ActivityLogService
 		}
 		// fmt.Println(sendGridKey)
 
-		employeeName := newEmployee.FirstName //fmt.Sprintf("%s %s", newEmployee.FirstName, newEmployee.LastName)
+		// employeeName := newEmployee.FirstName //fmt.Sprintf("%s %s", newEmployee.FirstName, newEmployee.LastName)
 		// Set up Email Data
-		emailText := "Thank you for being part of our Team. Please click the link below to confirm your email address and view your account"
-		emailData := ut.EmailData{
-			To: []*mail.Email{
-				mail.NewEmail(employeeName, newEmployee.Email),
-			},
-			PageTitle:     "Email Verification",
-			Subject:       "Email Verification: Welcome Aboard!",
-			Preheader:     "Employee Account Created! ",
-			BodyTitle:     fmt.Sprintf("Welcome, %s", employeeName),
-			FirstBodyText: emailText,
-		}
-		emailData.Button.Text = "Verify Email"
-		emailData.Button.URL = fmt.Sprintf("%s/verify-email/%s/%s", clientURL, newEmployee.ID, newEmployee.EmailToken)
+		// emailText := "Thank you for being part of our Team. Please click the link below to confirm your email address and view your account"
+		// emailData := ut.EmailData{
+		// 	To: []*mail.Email{
+		// 		mail.NewEmail(employeeName, newEmployee.Email),
+		// 	},
+		// 	PageTitle:     "Email Verification",
+		// 	Subject:       "Email Verification: Welcome Aboard!",
+		// 	Preheader:     "Employee Account Created! ",
+		// 	BodyTitle:     fmt.Sprintf("Welcome, %s", employeeName),
+		// 	FirstBodyText: emailText,
+		// }
+		// emailData.Button.Text = "Verify Email"
+		// emailData.Button.URL = fmt.Sprintf("%s/verify-email/%s/%s", clientURL, newEmployee.ID, newEmployee.EmailToken)
 
-		// Send A Welcome/Verification Email to Employee
-		emailBody := ut.ProcessEmail(emailData)
-		go ut.SendEmail(emailBody, sendGridKey)
+		// // Send A Welcome/Verification Email to Employee
+		// emailBody := ut.ProcessEmail(emailData)
+		// go ut.SendEmail(emailBody, sendGridKey)
 
 		// Decode to json so it can be used in the activity log
 		decoded, _ := json.Marshal(newEmployee)
@@ -164,7 +165,7 @@ func CreateEmployeeEndpoint(emps emp.EmployeeService, acs act.ActivityLogService
 
 		// resp := ut.Message(true, ut.Translate(tParam, r))
 		resp := ut.Message(true, ut.Translate(tParam, r))
-		resp["verify_url"] = emailData.Button.URL
+		// resp["verify_url"] = emailData.Button.URL
 		ut.Respond(w, r, resp)
 
 	}
