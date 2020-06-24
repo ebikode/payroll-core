@@ -1,1 +1,1 @@
-web: bin/pex-whitelabel-api
+web: bin/payroll-demom
