@@ -1,1 +1,1 @@
-web: bin/payroll-demom
+web: bin/payroll-core

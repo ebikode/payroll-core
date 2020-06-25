@@ -61,10 +61,18 @@ func InitJobs(mdb *storage.MDatabase) {
 			jb.RunPayrollGenerationJob(pyrService, astService, empService, taxService)
 		}
 
-		runGeneratePayrollJob()
+		var runPayrollPaymentJob = func() {
+			jb.RunPayrollPaymentJob(pyrService, astService)
+		}
 
-		// This runs every 20 seconds
+		runGeneratePayrollJob()
+		runPayrollPaymentJob()
+
+		// This runs every 12 Hours
 		go sched.Schedule().Every(12).Hours().Do(runGeneratePayrollJob)
+
+		// This runs every 60 Minutes
+		go sched.Schedule().Every(60).Minutes().Do(runPayrollPaymentJob)
 
 		sched.Run()
 	}
