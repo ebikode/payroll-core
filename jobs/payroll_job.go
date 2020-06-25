@@ -120,6 +120,35 @@ func RunPayrollGenerationJob(
 
 }
 
+// RunPayrollPaymentJob - Automated Payroll Payment
+func RunPayrollPaymentJob(pys pyr.PayrollService, aps apset.AppSettingService) {
+
+	payDay := aps.GetAppSettingByKey(ut.PayDayKey, "admin")
+
+	payDate, _ := strconv.ParseInt(payDay.Value, 10, 64)
+
+	now := time.Now()
+
+	todayDate := now.Day()
+	todayMonth := uint(int(now.Month()))
+	todayYear := uint(now.Year())
+
+	if todayDate >= int(payDate) {
+		checkPayroll := pys.GetSinglePayrollByMonthYear(todayMonth, todayYear)
+
+		if checkPayroll != nil && checkPayroll.PaymentStatus == ut.Pending && checkPayroll.Status == ut.Approved {
+
+			fmt.Println("Payroll Payment Automation Started")
+
+			pys.UpdatePayrollPaymentStatus(ut.Success, int(todayMonth), int(todayYear))
+
+			fmt.Println("Payroll Payment Automation Ended")
+
+		}
+	}
+
+}
+
 func generateNetSalaryAndTaxDeductions(salary *md.Salary) (float64, md.Tax) {
 
 	GrossSalary := salary.Salary
