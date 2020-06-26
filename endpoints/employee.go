@@ -95,7 +95,7 @@ func CreateEmployeeEndpoint(emps emp.EmployeeService, acs act.ActivityLogService
 		// username := strings(employee.FirstName).LowerCase() + "_" + strings(employee.LastName).LowerCase()
 
 		// REMOVE THIS AFTER DEMO
-		employee.Password = "EMPASSWORD2020"
+		// employee.Password = "EMPASSWORD2020"
 		employee.IsEmailVerified = true
 		employee.Status = ut.Active
 		// employee.Username = username
